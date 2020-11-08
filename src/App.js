@@ -5,6 +5,8 @@ import PersonInput from "./components/PersonInput"
 
 function App() {
   const[people, setPeople] = React.useState([])
+  const[newFirstName, setNewFirstName] = React.useState([])
+  const[newLastName, setNewLastName] = React.useState([])
 
 
   React.useEffect(() => {
@@ -17,12 +19,23 @@ function App() {
       return unsubscribe;
   }, [])
 
+  const onCreate=()=>{
+        const db = firebase.firestore()
+        db.collection("people").add({fName:newFirstName, lName:newLastName})
+  }
+
   return (
           <ul>
-          {people.map(person => (
-            <li key={person.id}>
+            <label>First Name: </label>
+            <input value={newFirstName} onChange={(e)=> setNewFirstName(e.target.value)}/>
+            <label>Last Name: </label>
+            <input value={newLastName} onChange={(e)=> setNewLastName(e.target.value)}/>
+            <button onClick={onCreate}>Create new person!</button>
+
+            {people.map(person => (
+              <li key={person.id}>
               <PersonInput person={person} />
-            </li>
+              </li>
             ))}
           </ul>
 );

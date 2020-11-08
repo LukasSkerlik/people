@@ -1,25 +1,31 @@
-import logo from './logo.svg';
+import React from "react"
 import './App.css';
+import firebase from "./firebase"
+import PersonInput from "./components/PersonInput"
 
 function App() {
+  const[people, setPeople] = React.useState([])
+
+
+  React.useEffect(() => {
+      const db = firebase.firestore();
+      const unsubscribe = db.collection("people").onSnapshot(snapshot => {
+        const peopleData= [];
+        snapshot.forEach(doc => peopleData.push({...doc.data(), id :doc.id}))
+        setPeople(peopleData)
+        })
+      return unsubscribe;
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+          <ul>
+          {people.map(person => (
+            <li key={person.id}>
+              <PersonInput person={person} />
+            </li>
+            ))}
+          </ul>
+);
 }
 
 export default App;
